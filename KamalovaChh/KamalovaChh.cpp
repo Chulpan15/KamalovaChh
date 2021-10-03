@@ -1,7 +1,25 @@
 #include <iostream>
 #include <fstream>
+#include <string>
+#include <Windows.h>
 
+int _stateMenu;
 using namespace std;
+
+void Menu()
+{
+	cout << "  Выберите действие" << endl
+		 << "  Добавить трубу - 1" << endl
+		 << "  Добавить КС - 2" << endl
+		 << "  Просмотр всех объектов - 3" << endl
+		 << "  Редактировать трубу - 4" << endl
+		 << "  Редактировать КС - 5" << endl
+		 << "  Сохранить - 6" << endl
+		 << "  Загрузить - 7" << endl
+		 << "  Выход - 0" << endl
+		 << "  Ваш выбор";
+	 cin >> _stateMenu;
+}
 
 struct Pipe
 {
@@ -102,6 +120,20 @@ CompressionStation CreateCompSt()
 	return cs;
 };
 
+CompressionStation LoadCompSt()
+{
+	ifstream fin;
+	fin.open("data2.txt", ios::in);
+	CompressionStation cs;
+	fin >> cs.id;
+	fin >> cs.name;
+	fin >> cs.NumberOfWorkshops;
+	fin >> cs.NumberOfWorkshopsInOperation;
+	fin >> cs.effiency;
+	fin.close();
+	return cs;
+};
+
 void PrintCompressionStation(const CompressionStation& cs)
 {
 	cout << "Compression Station's identifier: " << cs.id << endl;
@@ -123,12 +155,89 @@ void SaveCompressionStation(const CompressionStation& cs)
 
 int main()
 {
-	Pipe p = NewPipe();
-	CompressionStation cs = CreateCompSt();
-	PrintCompressionStation(cs);
-	PrintPipe(p);
-	SaveCompressionStation(cs);
-	SavePipe(p);
-	PrintPipe(LoadPipe());
-	return 0;
+	//Pipe p = NewPipe();
+	//CompressionStation cs = CreateCompSt();
+	//PrintCompressionStation(cs);
+	//PrintPipe(p);
+	//SaveCompressionStation(cs);
+	//SavePipe(p);
+	//PrintPipe(LoadPipe());
+	//PrintCompressionStation(LoadCompSt());
+	//return 0;
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
+	Menu();
+	while (_stateMenu != 0)
+	{
+		switch (_stateMenu)
+		{
+		case 0:
+			system("cls");
+
+			system("cls");
+
+		case 1:
+			system("cls");
+
+			system("cls");
+			Menu();
+			break;
+
+		case 2:
+			system("cls");
+
+			system("pause");
+			system("cls");
+			Menu();
+			break;
+
+		case 3:
+			system("cls");
+
+			system("pause");
+			system("cls");
+			Menu();
+			break;
+
+		case 4:
+			system("cls");
+
+			system("pause");
+			system("cls");
+			Menu();
+			break;
+
+		case 5:
+			system("cls");
+
+			system("pause");
+			system("cls");
+			Menu();
+			break;
+
+		case 6:
+			system("cls");
+
+			system("pause");
+			system("cls");
+			Menu();
+			break;
+
+		case 7:
+			system("cls");
+
+			system("pause");
+			system("cls");
+			Menu();
+			break;
+
+		//default:
+		//	system("pause");
+		//	system("cls");
+		//	cout « "Вы неправильно выбрали пункт в меню! " « endl;
+		//	return 0;
+		}
+	}
+
+
 };
