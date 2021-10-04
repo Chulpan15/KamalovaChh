@@ -17,7 +17,7 @@ void Menu()
 		 << "  Сохранить - 6" << endl
 		 << "  Загрузить - 7" << endl
 		 << "  Выход - 0" << endl
-		 << "  Ваш выбор";
+		 << "  Ваш выбор: ";
 	 cin >> _stateMenu;
 }
 
@@ -60,7 +60,7 @@ Pipe NewPipe()
 Pipe LoadPipe()
 {
 	ifstream filein;
-	filein.open("data.txt", ios::in);
+	filein.open("data3.txt", ios::in);
 	Pipe p;
 	filein >> p.id;
 	filein >> p.diametr;
@@ -70,12 +70,16 @@ Pipe LoadPipe()
 	return p;
 };
 
+void EditPipe(Pipe& p)
+{
+
+};
 
 void PrintPipe(const Pipe& p)
 {
 	cout << "Pipe identifier: " << p.id << endl;
 	cout << "Pipe's diametr: " << p.diametr << endl;
-	cout << "Pipe's length: " << p.length << endl;
+	cout << "Pipe's length: " << p.length << endl; 
 	if (p.InRepair == 1)
 	{
 		cout << "Pipe does not work" << endl;
@@ -104,6 +108,24 @@ void SavePipe(const Pipe& p)
 	fileout.close();
 };
 
+void SavePipe2(const Pipe& p)
+{
+	ofstream fileoutt;
+	fileoutt.open("data3.txt", ios::out);
+	fileoutt << p.id << endl;
+	fileoutt << p.diametr << endl;
+	fileoutt << p.length << endl;
+	if (p.InRepair == 1)
+	{
+		fileoutt << "1" << endl;
+	}
+	else
+	{
+		fileoutt << "0" << endl;
+	}
+	fileoutt.close();
+}
+
 CompressionStation CreateCompSt()
 {
 	CompressionStation cs = {};
@@ -122,9 +144,9 @@ CompressionStation CreateCompSt()
 
 CompressionStation LoadCompSt()
 {
+	CompressionStation cs;
 	ifstream fin;
 	fin.open("data2.txt", ios::in);
-	CompressionStation cs;
 	fin >> cs.id;
 	fin >> cs.name;
 	fin >> cs.NumberOfWorkshops;
@@ -132,6 +154,11 @@ CompressionStation LoadCompSt()
 	fin >> cs.effiency;
 	fin.close();
 	return cs;
+};
+
+void EditCompressionStation(CompressionStation& cs)
+{
+
 };
 
 void PrintCompressionStation(const CompressionStation& cs)
@@ -145,7 +172,7 @@ void PrintCompressionStation(const CompressionStation& cs)
 void SaveCompressionStation(const CompressionStation& cs)
 {
 	ofstream fout;
-	fout.open("data2.txt", ios::out);
+	fout.open("data1.txt", ios::out);
 	fout << "Compression Station's identifier: " << cs.id << endl;
 	fout << "Compression Station's name: " << cs.name << endl;
 	fout << "Compression Station's number of workshops: " << cs.NumberOfWorkshops << endl;
@@ -153,20 +180,24 @@ void SaveCompressionStation(const CompressionStation& cs)
 	fout.close();
 };
 
+void SaveCompressionStation2(const CompressionStation& cs)
+{
+	ofstream foutt;
+	foutt.open("data2.txt", ios::out);
+	foutt << cs.id << endl;
+	foutt << cs.name << endl;
+	foutt << cs.NumberOfWorkshops << endl;
+	foutt << cs.NumberOfWorkshopsInOperation << endl;
+	foutt.close();
+}
+
 int main()
 {
-	//Pipe p = NewPipe();
-	//CompressionStation cs = CreateCompSt();
-	//PrintCompressionStation(cs);
-	//PrintPipe(p);
-	//SaveCompressionStation(cs);
-	//SavePipe(p);
-	//PrintPipe(LoadPipe());
-	//PrintCompressionStation(LoadCompSt());
-	//return 0;
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 	Menu();
+	Pipe p;
+	CompressionStation cs;
 	while (_stateMenu != 0)
 	{
 		switch (_stateMenu)
@@ -178,14 +209,14 @@ int main()
 
 		case 1:
 			system("cls");
-
+			p = NewPipe();
 			system("cls");
 			Menu();
 			break;
 
 		case 2:
 			system("cls");
-
+		    cs = CreateCompSt();
 			system("pause");
 			system("cls");
 			Menu();
@@ -193,7 +224,8 @@ int main()
 
 		case 3:
 			system("cls");
-
+			PrintPipe(p);
+			PrintCompressionStation(cs);
 			system("pause");
 			system("cls");
 			Menu();
@@ -217,7 +249,10 @@ int main()
 
 		case 6:
 			system("cls");
-
+			SavePipe(p);
+			SavePipe2(p);
+			SaveCompressionStation(cs);
+			SaveCompressionStation2(cs);
 			system("pause");
 			system("cls");
 			Menu();
@@ -225,19 +260,18 @@ int main()
 
 		case 7:
 			system("cls");
-
+			PrintPipe(LoadPipe());
+			PrintCompressionStation(LoadCompSt());
 			system("pause");
 			system("cls");
 			Menu();
 			break;
 
-		//default:
-		//	system("pause");
-		//	system("cls");
-		//	cout « "Вы неправильно выбрали пункт в меню! " « endl;
-		//	return 0;
+		default:
+			system("pause");
+			system("cls");
+			cout << "Неправильно выбран пункт меню, попробуйте снова" << endl;
+
 		}
 	}
-
-
 };
