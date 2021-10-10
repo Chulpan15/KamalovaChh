@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <Windows.h>
+#include <cstdlib>
 
 using namespace std;
 
@@ -34,7 +35,7 @@ int GetCorrectNumber(int min, int max)
 struct Pipe
 {
 	int id;
-	int diametr;
+	double diametr;
 	double length;
 	int InRepair;
 };
@@ -45,106 +46,91 @@ struct CompressionStation
     string name;
 	int NumberOfWorkshops;
 	int NumberOfWorkshopsInOperation;
-	double effiency;
+	int effiency;
 };
 
-Pipe LoadPipe()
+void LoadPipeCompSt( Pipe& p, CompressionStation& cs)
 {
 	ifstream filein;
-	filein.open("data3.txt", ios::in);
-	Pipe p;
+	filein.open("data.txt", ios::in);
 	filein >> p.id;
 	filein >> p.diametr;
 	filein >> p.length;
 	filein >> p.InRepair;
+	filein >> cs.id;
+	filein.ignore(10000, '\n');
+	string(cs.name);
+	getline(filein, cs.name);
+	filein >> cs.NumberOfWorkshops;
+	filein >> cs.NumberOfWorkshopsInOperation;
+	filein >> cs.effiency;
 	filein.close();
-	return p;
+}
+
+void PrintPipeCompSt(Pipe& p, CompressionStation& cs)
+{
+	cout << "Pipe identifier: " << p.id << endl;
+	cout << "Pipe's diametr: " << p.diametr << endl;
+	cout << "Pipe's length: " << p.length << endl;
+	if (p.InRepair == 1)
+	{
+		cout << "Pipe does not work" << endl;
+	}
+	if (p.InRepair == 2)
+	{
+		cout << "Pipe works" << endl;
+	}
+	cout << "Compression Station's identifier: " << cs.id << endl;
+	cin.ignore(10000, '\n');
+	cout << "Compression Station's name: " << cs.name << endl;
+	cout << "Compression Station's number of workshops: " << cs.NumberOfWorkshops << endl;
+	cout << "Compression Station's number of workshops in operation: " << cs.NumberOfWorkshopsInOperation << endl;
+	cout << "Compression Station's effiency: " <<cs.effiency << endl;
 }
 
 void EditPipe(Pipe &p)
 {
-	p.InRepair = (!p.InRepair);
-}
-
-
-void SavePipe(const Pipe& p)
-{
-	ofstream fileout;
-	fileout.open("data.txt", ios::out);
-	fileout << "Pipe identifier: " << p.id << endl;
-	fileout << "Pipe's diametr: " << p.diametr << endl;
-	fileout << "Pipe's length: " << p.length << endl;
 	if (p.InRepair == 1)
 	{
-		fileout << "Pipe does not work" << endl;
-	}
+		p.InRepair = 2;
+    }
 	else
 	{
-		fileout << "Pipe works" << endl;
+		p.InRepair = 1;
 	}
-	fileout.close();
-};
+}
 
-void SavePipe2(const Pipe& p)
+void SavePipeCompSt(const Pipe& p, CompressionStation& cs)
 {
 	ofstream fileoutt;
-	fileoutt.open("data3.txt", ios::out);
+	fileoutt.open("data.txt", ios::out);
 	fileoutt << p.id << endl;
 	fileoutt << p.diametr << endl;
 	fileoutt << p.length << endl;
 	fileoutt << p.InRepair << endl;
+	fileoutt << cs.id << endl;
+	fileoutt << cs.name << endl;
+	fileoutt << cs.NumberOfWorkshops << endl;
+	fileoutt << cs.NumberOfWorkshopsInOperation << endl;
 	fileoutt.close();
 }
 
-CompressionStation LoadCompSt()
-{
-	CompressionStation cs;
-	ifstream fin;
-	fin.open("data2.txt", ios::in);
-	fin >> cs.id;
-	fin >> cs.name;
-	fin >> cs.NumberOfWorkshops;
-	fin >> cs.NumberOfWorkshopsInOperation;
-	fin >> cs.effiency;
-	fin.close();
-	return cs;
-};
-
 void EditCompressionStation(CompressionStation& cs)
 {
-	string change;
-	cout << "Добавить цех или запустить имеющиеся? (Добавить/Запустить) " << endl;
+	cout << "Добавить цех или остановить один работающий? (1 - Добавить/ 2 - Остановить):  ";
+	if (GetCorrectNumber(1,2) == 1 && (cs.NumberOfWorkshopsInOperation < cs.NumberOfWorkshops))
+	{
+		cout << cs.NumberOfWorkshopsInOperation++ << endl;
+	}
+	if (GetCorrectNumber(1,2) == 2 && (cs.NumberOfWorkshopsInOperation > 0))
+	{
+		cs.NumberOfWorkshopsInOperation--;
+	}
+	else
+	{
+		cout << "Редактирование невозможно";
+	}
 
-};
-
-void PrintCompressionStation(const CompressionStation& cs)
-{
-	cout << "Compression Station's identifier: " << cs.id << endl;
-	cout << "Compression Station's name: " << cs.name << endl;
-	cout << "Compression Station's number of workshops: " << cs.NumberOfWorkshops << endl;
-	cout << "Compression Station's number of workshops in operation: " << cs.NumberOfWorkshopsInOperation << endl;
-};
-
-void SaveCompressionStation(const CompressionStation& cs)
-{
-	ofstream fout;
-	fout.open("data1.txt", ios::out);
-	fout << "Compression Station's identifier: " << cs.id << endl;
-	fout << "Compression Station's name: " << cs.name << endl;
-	fout << "Compression Station's number of workshops: " << cs.NumberOfWorkshops << endl;
-	fout << "Compression Station's number of workshops in operation: " << cs.NumberOfWorkshopsInOperation << endl;
-	fout.close();
-};
-
-void SaveCompressionStation2(const CompressionStation& cs)
-{
-	ofstream foutt;
-	foutt.open("data2.txt", ios::out);
-	foutt << cs.id << endl;
-	foutt << cs.name << endl;
-	foutt << cs.NumberOfWorkshops << endl;
-	foutt << cs.NumberOfWorkshopsInOperation << endl;
-	foutt.close();
 }
 
 istream& operator >> (istream& in, Pipe& p)
@@ -177,9 +163,9 @@ istream& operator >> (istream& in, Pipe& p)
 	{
 		cin.clear();
 		cin.ignore(10000, '\n');
-		cout << "Is pipe in repair? (1 - Yes and 0 - No) ";
+		cout << "Is pipe in repair? (1 - Yes and 2 - No) ";
 		cin >> p.InRepair;
-	} while (cin.fail() || ((p.InRepair != 1) && (p.InRepair != 0)));
+	} while (cin.fail() || ((p.InRepair != 1) && (p.InRepair != 2)));
 	return in;
 }
 
@@ -191,10 +177,12 @@ istream& operator >> (istream& in, CompressionStation& cs)
 		cin.ignore(10000, '\n');
 		cout << "Please, enter identifier: ";
 		cin >> cs.id;
+		cin.ignore(10000,'\n');
 	} while (cin.fail() || ((cs.id < 0) && (cs.id > 10000000)));
-
+	
 	cout << "Please, enter name: ";
-	in >> cs.name;
+	string(cs.name);
+	getline(cin, cs.name);
 
 	do
 	{
@@ -222,7 +210,8 @@ istream& operator >> (istream& in, CompressionStation& cs)
 
 	return in;
 }
-ostream& operator << (ostream& out,const Pipe& p)
+
+ostream& operator << (ostream& out, const Pipe& p)
 {
 	out << "Pipe identifier: " << p.id << endl;
 	out << "Pipe's diametr: " << p.diametr << endl;
@@ -231,9 +220,13 @@ ostream& operator << (ostream& out,const Pipe& p)
 	{
 		out << "Pipe does not work" << endl;
 	}
-	else
+	if (p.InRepair == 2)
 	{
 		out << "Pipe works" << endl;
+	}
+	else
+	{
+		out << "There is no data" << endl;
 	}
 	return out;
 }
@@ -244,6 +237,7 @@ ostream& operator << (ostream& out, const CompressionStation& cs)
 	out << "Compression Station's name: " << cs.name << endl;
 	out << "Compression Station's number of workshops: " << cs.NumberOfWorkshops << endl;
 	out << "Compression Station's number of workshops in operation: " << cs.NumberOfWorkshopsInOperation << endl;
+	out << "Compression Station's effiency: " << cs.effiency << endl;
 	return out;
 }
 
@@ -251,8 +245,8 @@ int main()
 {
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
-	Pipe p;
-	CompressionStation cs;
+	Pipe p = {};
+	CompressionStation cs = {};
 	while(1)
 	{
 		Menu();
@@ -277,28 +271,30 @@ int main()
 			cout << "  " << endl;
 			cout << p;
 			cout << "  " << endl;
-			//PrintCompressionStation(cs);
 			cout << cs;
 			cout << "  " << endl;
 			break;
 
 		case 4:
 			EditPipe(p);	
+			cout << " " << endl;
 			break;
 
 		case 5:
+			EditCompressionStation(cs);
+			cout << " " << endl;
 			break;
 
 		case 6:
-			SavePipe(p);
-			SavePipe2(p);
-			SaveCompressionStation(cs);
-			SaveCompressionStation2(cs);
+			cout << " " << endl;
+			SavePipeCompSt(p,cs);
 			break;
 
 		case 7:
 			cout << "  " << endl;
 			//PrintPipe(LoadPipe());
+			LoadPipeCompSt(p, cs);
+			PrintPipeCompSt(p,cs);
 			//PrintCompressionStation(LoadCompSt());
 			cout << "  " << endl;
 			break;
