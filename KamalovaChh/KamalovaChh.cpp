@@ -3,36 +3,33 @@
 #include <string>
 #include <Windows.h>
 
-int _stateMenu;
 using namespace std;
 
 void Menu()
 {
-	cout << "  Выберите действие" << endl
-		 << "  Добавить трубу - 1" << endl
-		 << "  Добавить КС - 2" << endl
-		 << "  Просмотр всех объектов - 3" << endl
-		 << "  Редактировать трубу - 4" << endl
-		 << "  Редактировать КС - 5" << endl
-		 << "  Сохранить - 6" << endl
-		 << "  Загрузить - 7" << endl
-		 << "  Выход - 0" << endl
-		 << "  Ваш выбор: ";
-	 cin >> _stateMenu;
+ cout   << "  1. Добавить трубу" << endl
+		<< "  2. Добавить КС" << endl
+		<< "  3. Просмотр всех объектов" << endl
+		<< "  4. Редактировать трубу" << endl
+		<< "  5. Редактировать КС" << endl
+		<< "  6. Сохранить" << endl
+		<< "  7. Загрузить" << endl
+		<< "  0. Выход" << endl
+		<< "  Выберите действие: ";
 }
 
 int GetCorrectNumber(int min, int max)
 {
 	int x;
-	do
+	while((cin >> x).fail() || x<min || x>max)
 	{
 		cin.clear();
 		cin.ignore(10000, '\n');
-		cout << "Type number (" << min << "-" << max << "): ";
-		cin >> x;
-	} while (cin.fail() || x<min || x>max);
+		cout << "Your choice. Please, type number (" << min << "-" << max << "): ";
+	}
 	return x;
 }
+
 
 struct Pipe
 {
@@ -49,44 +46,6 @@ struct CompressionStation
 	int NumberOfWorkshops;
 	int NumberOfWorkshopsInOperation;
 	double effiency;
-};
-
-Pipe NewPipe()
-{
-	Pipe p = {};
-	do
-	{
-		cin.clear();
-		cin.ignore(10000, '\n');
-		cout << "Please, enter identifier: ";
-		cin >> p.id;
-	} while (cin.fail() || ((p.id < 0) && (p.id > 10000000)));
-	
-	do
-	{
-		cin.clear();
-		cin.ignore(10000, '\n');
-		cout << "Please, enter diametr: ";
-		cin >> p.diametr;
-	} while (cin.fail() || ((p.diametr < 0) && (p.diametr > 10000000)));
-
-	do
-	{
-		cin.clear();
-		cin.ignore(10000, '\n');
-		cout << "Please, enter length: ";
-		cin >> p.length;
-	} while (cin.fail() || ((p.length < 0) && (p.length > 10000000)));
-
-	do
-	{
-		cin.clear();
-		cin.ignore(10000,'\n');
-		cout << "Is pipe in repair? (1 - Yes and 0 - No) ";
-		cin >> p.InRepair;
-	}while (cin.fail() || ((p.InRepair != 1) && (p.InRepair != 0)));
-
-	return p;
 };
 
 Pipe LoadPipe()
@@ -107,20 +66,6 @@ void EditPipe(Pipe &p)
 	p.InRepair = (!p.InRepair);
 }
 
-void PrintPipe(const Pipe& p)
-{
-	cout << "Pipe identifier: " << p.id << endl;
-	cout << "Pipe's diametr: " << p.diametr << endl;
-	cout << "Pipe's length: " << p.length << endl; 
-	if (p.InRepair == 1)
-	{
-		cout << "Pipe does not work" << endl;
-	}
-	else
-	{
-		cout << "Pipe works" << endl;
-	}
-};
 
 void SavePipe(const Pipe& p)
 {
@@ -150,47 +95,6 @@ void SavePipe2(const Pipe& p)
 	fileoutt << p.InRepair << endl;
 	fileoutt.close();
 }
-
-CompressionStation CreateCompSt()
-{
-	CompressionStation cs = {};
-	do
-	{
-		cin.clear();
-		cin.ignore(10000, '\n');
-		cout << "Please, enter identifier: ";
-		cin >> cs.id;
-	} while (cin.fail() || ((cs.id < 0) && (cs.id > 10000000)));
-
-	cout << "Please, enter name: ";
-	cin >> cs.name;
-
-	do
-	{
-		cin.clear();
-		cin.ignore(10000, '\n');
-		cout << "Please, enter number of workshops: ";
-		cin >> cs.NumberOfWorkshops;
-	} while (cin.fail() || ((cs.NumberOfWorkshops < 0) && (cs.NumberOfWorkshops > 10000000)));
-
-	do
-	{
-		cin.clear();
-		cin.ignore(10000, '\n');
-		cout << "Please, enter number of active workshops: ";
-		cin >> cs.NumberOfWorkshopsInOperation;
-	} while (cin.fail() || ((cs.NumberOfWorkshopsInOperation < 0) && (cs.NumberOfWorkshopsInOperation > 10000000)));
-
-	do
-	{
-		cin.clear();
-		cin.ignore(10000, '\n');
-		cout << "Please, point out effiency: ";
-		cin >> cs.effiency;
-	} while (cin.fail() || ((cs.effiency < 0) && (cs.effiency > 10000000)));
-
-	return cs;
-};  
 
 CompressionStation LoadCompSt()
 {
@@ -243,84 +147,163 @@ void SaveCompressionStation2(const CompressionStation& cs)
 	foutt.close();
 }
 
+istream& operator >> (istream& in, Pipe& p)
+{
+	do
+	{
+		cin.clear();
+		cin.ignore(10000, '\n');
+		cout << "Please, enter identifier: ";
+		cin >> p.id;
+	} while (cin.fail() || ((p.id < 0) && (p.id > 10000000)));
+
+	do
+	{
+		cin.clear();
+		cin.ignore(10000, '\n');
+		cout << "Please, enter diametr: ";
+		cin >> p.diametr;
+	} while (cin.fail() || ((p.diametr < 0) && (p.diametr > 10000000)));
+
+	do
+	{
+		cin.clear();
+		cin.ignore(10000, '\n');
+		cout << "Please, enter length: ";
+		cin >> p.length;
+	} while (cin.fail() || ((p.length < 0) && (p.length > 10000000)));
+
+	do
+	{
+		cin.clear();
+		cin.ignore(10000, '\n');
+		cout << "Is pipe in repair? (1 - Yes and 0 - No) ";
+		cin >> p.InRepair;
+	} while (cin.fail() || ((p.InRepair != 1) && (p.InRepair != 0)));
+	return in;
+}
+
+istream& operator >> (istream& in, CompressionStation& cs)
+{
+	do
+	{
+		cin.clear();
+		cin.ignore(10000, '\n');
+		cout << "Please, enter identifier: ";
+		cin >> cs.id;
+	} while (cin.fail() || ((cs.id < 0) && (cs.id > 10000000)));
+
+	cout << "Please, enter name: ";
+	in >> cs.name;
+
+	do
+	{
+		cin.clear();
+		cin.ignore(10000, '\n');
+		cout << "Please, enter number of workshops: ";
+		cin >> cs.NumberOfWorkshops;
+	} while (cin.fail() || ((cs.NumberOfWorkshops < 0) && (cs.NumberOfWorkshops > 10000000)));
+
+	do
+	{
+		cin.clear();
+		cin.ignore(10000, '\n');
+		cout << "Please, enter number of active workshops: ";
+		cin >> cs.NumberOfWorkshopsInOperation;
+	} while (cin.fail() || ((cs.NumberOfWorkshopsInOperation < 0) && (cs.NumberOfWorkshopsInOperation > 10000000)));
+
+	do
+	{
+		cin.clear();
+		cin.ignore(10000, '\n');
+		cout << "Please, point out effiency: ";
+		cin >> cs.effiency;
+	} while (cin.fail() || ((cs.effiency < 0) && (cs.effiency > 10000000)));
+
+	return in;
+}
+ostream& operator << (ostream& out,const Pipe& p)
+{
+	out << "Pipe identifier: " << p.id << endl;
+	out << "Pipe's diametr: " << p.diametr << endl;
+	out << "Pipe's length: " << p.length << endl;
+	if (p.InRepair == 1)
+	{
+		out << "Pipe does not work" << endl;
+	}
+	else
+	{
+		out << "Pipe works" << endl;
+	}
+	return out;
+}
+
+ostream& operator << (ostream& out, const CompressionStation& cs)
+{
+	out << "Compression Station's identifier: " << cs.id << endl;
+	out << "Compression Station's name: " << cs.name << endl;
+	out << "Compression Station's number of workshops: " << cs.NumberOfWorkshops << endl;
+	out << "Compression Station's number of workshops in operation: " << cs.NumberOfWorkshopsInOperation << endl;
+	return out;
+}
+
 int main()
 {
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
-	Menu();
 	Pipe p;
 	CompressionStation cs;
+	while(1)
 	{
+		Menu();
+
 		switch (GetCorrectNumber(0,7))
 		{
 		case 0:
-			system("cls");
-
-			system("cls");
+			return 0;
 
 		case 1:
-			system("cls");
-			p = NewPipe();
-			system("cls");
-			Menu();
+			cin >> p;
+			cout << "  " << endl;
 			break;
 
 		case 2:
-			system("cls");
-		    cs = CreateCompSt();
-			system("pause");
-			system("cls");
-			Menu();
+			cout << "  " << endl;
+			cin >> cs;
+			cout << "  " << endl;
 			break;
 
 		case 3:
-			system("cls");
-			PrintPipe(p);
-			PrintCompressionStation(cs);
-			system("pause");
-			system("cls");
-			Menu();
+			cout << "  " << endl;
+			cout << p;
+			cout << "  " << endl;
+			//PrintCompressionStation(cs);
+			cout << cs;
+			cout << "  " << endl;
 			break;
 
 		case 4:
-			system("cls");
 			EditPipe(p);	
-			system("pause");
-			system("cls");
-			Menu();
 			break;
 
 		case 5:
-			system("cls");
-
-			system("pause");
-			system("cls");
-			Menu();
 			break;
 
 		case 6:
-			system("cls");
 			SavePipe(p);
 			SavePipe2(p);
 			SaveCompressionStation(cs);
 			SaveCompressionStation2(cs);
-			system("pause");
-			system("cls");
-			Menu();
 			break;
 
 		case 7:
-			system("cls");
-			PrintPipe(LoadPipe());
-			PrintCompressionStation(LoadCompSt());
-			system("pause");
-			system("cls");
-			Menu();
+			cout << "  " << endl;
+			//PrintPipe(LoadPipe());
+			//PrintCompressionStation(LoadCompSt());
+			cout << "  " << endl;
 			break;
 
 		default:
-			system("pause");
-			system("cls");
 			cout << "Неправильно выбран пункт меню, попробуйте снова" << endl;
 		}
 	}
