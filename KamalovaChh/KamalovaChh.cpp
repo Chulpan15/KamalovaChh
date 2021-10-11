@@ -31,13 +31,24 @@ int GetCorrectNumber(int min, int max)
 	return x;
 }
 
+int Proverka()
+{
+	int y;
+	do
+	{
+		cin.clear();
+		cin.ignore(10000, '\n');
+		cin >> y;
+	} while (cin.fail() || ((y < 0) && (y > 10000000)));
+	return y;
+}
 
 struct Pipe
 {
 	int id;
-	double diametr;
-	double length;
-	int InRepair;
+	int diametr;
+	int length;
+	bool InRepair = true;
 };
 
 struct CompressionStation
@@ -49,84 +60,103 @@ struct CompressionStation
 	int effiency;
 };
 
-void LoadPipeCompSt( Pipe& p, CompressionStation& cs)
+void LoadPipeCompSt( Pipe& p, CompressionStation& cs)//!!!!!!!!!!!!!!!!!!!!!!!!!!!! //Исправлено
 {
 	ifstream filein;
 	filein.open("data.txt", ios::in);
-	filein >> p.id;
-	filein >> p.diametr;
-	filein >> p.length;
-	filein >> p.InRepair;
-	filein >> cs.id;
-	filein.ignore(10000, '\n');
-	string(cs.name);
-	getline(filein, cs.name);
-	filein >> cs.NumberOfWorkshops;
-	filein >> cs.NumberOfWorkshopsInOperation;
-	filein >> cs.effiency;
+	if (p.id != 0)
+	{
+		filein >> p.id;
+		filein >> p.diametr;
+		filein >> p.length;
+		filein >> p.InRepair;
+	}
+	if (cs.id != 0)
+	{
+		filein >> cs.id;
+		filein.ignore(10000, '\n');
+		string(cs.name);
+		getline(filein, cs.name);
+		filein >> cs.NumberOfWorkshops;
+		filein >> cs.NumberOfWorkshopsInOperation;
+		filein >> cs.effiency;
+	}
 	filein.close();
 }
 
-void PrintPipeCompSt(Pipe& p, CompressionStation& cs)
+void PrintPipeCompSt(Pipe& p, CompressionStation& cs)//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //Исправлено
 {
-	cout << "Pipe identifier: " << p.id << endl;
-	cout << "Pipe's diametr: " << p.diametr << endl;
-	cout << "Pipe's length: " << p.length << endl;
-	if (p.InRepair == 1)
+	if (p.id != 0)
 	{
-		cout << "Pipe does not work" << endl;
+		cout << "Pipe identifier: " << p.id << endl;
+		cout << "Pipe's diametr: " << p.diametr << endl;
+		cout << "Pipe's length: " << p.length << endl;
+		if (p.InRepair == 1)
+		{
+			cout << "Pipe does not work" << endl;
+		}
+		if (p.InRepair == 0)
+		{
+			cout << "Pipe works" << endl;
+		}
 	}
-	if (p.InRepair == 2)
+	if (cs.id != 0)
 	{
-		cout << "Pipe works" << endl;
+		cout << "Compression Station's identifier: " << cs.id << endl;
+		cin.ignore(10000, '\n');
+		cout << "Compression Station's name: " << cs.name << endl;
+		cout << "Compression Station's number of workshops: " << cs.NumberOfWorkshops << endl;
+		cout << "Compression Station's number of workshops in operation: " << cs.NumberOfWorkshopsInOperation << endl;
+		cout << "Compression Station's effiency: " << cs.effiency << endl;
 	}
-	cout << "Compression Station's identifier: " << cs.id << endl;
-	cin.ignore(10000, '\n');
-	cout << "Compression Station's name: " << cs.name << endl;
-	cout << "Compression Station's number of workshops: " << cs.NumberOfWorkshops << endl;
-	cout << "Compression Station's number of workshops in operation: " << cs.NumberOfWorkshopsInOperation << endl;
-	cout << "Compression Station's effiency: " <<cs.effiency << endl;
+	else
+	{
+		cout << "There is no data";
+	}
 }
 
 void EditPipe(Pipe &p)
 {
-	if (p.InRepair == 1)
-	{
-		p.InRepair = 2;
-    }
-	else
-	{
-		p.InRepair = 1;
-	}
+	p.InRepair = !p.InRepair;
 }
 
-void SavePipeCompSt(const Pipe& p, CompressionStation& cs)
+void SavePipeCompSt(const Pipe& p, CompressionStation& cs)//!!!!!!!!!!!!!!!!!!!!! .........//Исправлено
 {
 	ofstream fileoutt;
 	fileoutt.open("data.txt", ios::out);
-	fileoutt << p.id << endl;
-	fileoutt << p.diametr << endl;
-	fileoutt << p.length << endl;
-	fileoutt << p.InRepair << endl;
-	fileoutt << cs.id << endl;
-	fileoutt << cs.name << endl;
-	fileoutt << cs.NumberOfWorkshops << endl;
-	fileoutt << cs.NumberOfWorkshopsInOperation << endl;
+	if (p.id != 0)
+	{
+		fileoutt << "Pipe: " << endl;
+		fileoutt << p.id << endl;
+		fileoutt << p.diametr << endl;
+		fileoutt << p.length << endl;
+		fileoutt << p.InRepair << endl;
+	}
+	if (cs.id != 0)
+	{
+		fileoutt << "Compression Station: " << endl;
+		fileoutt << cs.id << endl;
+		fileoutt << cs.name << endl;
+		fileoutt << cs.NumberOfWorkshops << endl;
+		fileoutt << cs.NumberOfWorkshopsInOperation << endl;
+	}
 	fileoutt.close();
 }
 
 void EditCompressionStation(CompressionStation& cs)
 {
 	cout << "Добавить цех или остановить один работающий? (1 - Добавить/ 2 - Остановить):  ";
-	if (GetCorrectNumber(1,2) == 1 && (cs.NumberOfWorkshopsInOperation < cs.NumberOfWorkshops))
+	if (GetCorrectNumber(1,2) == 1 && (cs.NumberOfWorkshopsInOperation < cs.NumberOfWorkshops))//........// Исправлено
 	{
 		cout << cs.NumberOfWorkshopsInOperation++ << endl;
+		return;
 	}
 	if (GetCorrectNumber(1,2) == 2 && (cs.NumberOfWorkshopsInOperation > 0))
 	{
 		cs.NumberOfWorkshopsInOperation--;
+		return;
 	}
-	else
+	if ((cs.NumberOfWorkshopsInOperation = cs.NumberOfWorkshops) || (cs.NumberOfWorkshopsInOperation = 0 || cs.NumberOfWorkshopsInOperation < 0 || cs.NumberOfWorkshopsInOperation > cs.NumberOfWorkshops))
 	{
 		cout << "Редактирование невозможно";
 	}
@@ -135,109 +165,65 @@ void EditCompressionStation(CompressionStation& cs)
 
 istream& operator >> (istream& in, Pipe& p)
 {
-	do
-	{
-		cin.clear();
-		cin.ignore(10000, '\n');
-		cout << "Please, enter identifier: ";
-		cin >> p.id;
-	} while (cin.fail() || ((p.id < 0) && (p.id > 10000000)));
-
-	do
-	{
-		cin.clear();
-		cin.ignore(10000, '\n');
-		cout << "Please, enter diametr: ";
-		cin >> p.diametr;
-	} while (cin.fail() || ((p.diametr < 0) && (p.diametr > 10000000)));
-
-	do
-	{
-		cin.clear();
-		cin.ignore(10000, '\n');
-		cout << "Please, enter length: ";
-		cin >> p.length;
-	} while (cin.fail() || ((p.length < 0) && (p.length > 10000000)));
-
-	do
-	{
-		cin.clear();
-		cin.ignore(10000, '\n');
-		cout << "Is pipe in repair? (1 - Yes and 2 - No) ";
-		cin >> p.InRepair;
-	} while (cin.fail() || ((p.InRepair != 1) && (p.InRepair != 2)));
+	cout << "Please, enter identifier: ";
+	Proverka();
+	cout << "Please, enter diametr: ";
+	Proverka();
+	cout << "Please, enter length: ";
+	Proverka();
+	cout << "Is pipe in repair? (1 - Yes and 0 - No) ";
+	Proverka();
 	return in;
 }
 
-istream& operator >> (istream& in, CompressionStation& cs)
+istream& operator >> (istream& in, CompressionStation& cs)//~~~~~~~~~~~~~~~~~~~~~ //Исправлено
 {
-	do
-	{
-		cin.clear();
-		cin.ignore(10000, '\n');
-		cout << "Please, enter identifier: ";
-		cin >> cs.id;
-		cin.ignore(10000,'\n');
-	} while (cin.fail() || ((cs.id < 0) && (cs.id > 10000000)));
-	
+	cout << "Please, enter identifier: ";
+	Proverka();
+	cin.ignore(10000, '\n');
 	cout << "Please, enter name: ";
-	string(cs.name);
+	string();
 	getline(cin, cs.name);
-
-	do
-	{
-		cin.clear();
-		cin.ignore(10000, '\n');
-		cout << "Please, enter number of workshops: ";
-		cin >> cs.NumberOfWorkshops;
-	} while (cin.fail() || ((cs.NumberOfWorkshops < 0) && (cs.NumberOfWorkshops > 10000000)));
-
-	do
-	{
-		cin.clear();
-		cin.ignore(10000, '\n');
-		cout << "Please, enter number of active workshops: ";
-		cin >> cs.NumberOfWorkshopsInOperation;
-	} while (cin.fail() || ((cs.NumberOfWorkshopsInOperation < 0) && (cs.NumberOfWorkshopsInOperation > 10000000)));
-
-	do
-	{
-		cin.clear();
-		cin.ignore(10000, '\n');
-		cout << "Please, point out effiency: ";
-		cin >> cs.effiency;
-	} while (cin.fail() || ((cs.effiency < 0) && (cs.effiency > 10000000)));
-
+	cout << "Please, enter number of workshops: ";
+	Proverka();
+	cout << "Please, enter number of active workshops: ";
+	Proverka();
+	cout << "Please, point out effiency: ";
+	Proverka();
+	cout << "Please, point out effiency: ";
+	Proverka();
 	return in;
 }
 
-ostream& operator << (ostream& out, const Pipe& p)
+ostream& operator << (ostream& out, const Pipe& p)//!!!!!!!!!!!!!!!!!! //Исправлено
 {
-	out << "Pipe identifier: " << p.id << endl;
-	out << "Pipe's diametr: " << p.diametr << endl;
-	out << "Pipe's length: " << p.length << endl;
-	if (p.InRepair == 1)
+	if (p.id != 0)
 	{
-		out << "Pipe does not work" << endl;
-	}
-	if (p.InRepair == 2)
-	{
-		out << "Pipe works" << endl;
-	}
-	else
-	{
-		out << "There is no data" << endl;
+		out << "Pipe identifier: " << p.id << endl;
+		out << "Pipe's diametr: " << p.diametr << endl;
+		out << "Pipe's length: " << p.length << endl;
+		if (p.InRepair == 1)
+		{
+			out << "Pipe does not work" << endl;
+		}
+		if (p.InRepair == 0)
+		{
+			out << "Pipe works" << endl;
+		}
 	}
 	return out;
 }
 
-ostream& operator << (ostream& out, const CompressionStation& cs)
+ostream& operator << (ostream& out, const CompressionStation& cs)//????????????/ //Исправлено
 {
-	out << "Compression Station's identifier: " << cs.id << endl;
-	out << "Compression Station's name: " << cs.name << endl;
-	out << "Compression Station's number of workshops: " << cs.NumberOfWorkshops << endl;
-	out << "Compression Station's number of workshops in operation: " << cs.NumberOfWorkshopsInOperation << endl;
-	out << "Compression Station's effiency: " << cs.effiency << endl;
+	if (cs.id != 0)
+	{
+		out << "Compression Station's identifier: " << cs.id << endl;
+		out << "Compression Station's name: " << cs.name << endl;
+		out << "Compression Station's number of workshops: " << cs.NumberOfWorkshops << endl;
+		out << "Compression Station's number of workshops in operation: " << cs.NumberOfWorkshopsInOperation << endl;
+		out << "Compression Station's effiency: " << cs.effiency << endl;
+	}
 	return out;
 }
 
@@ -281,7 +267,7 @@ int main()
 			break;
 
 		case 5:
-			EditCompressionStation(cs);
+			EditCompressionStation(cs);//????????? 
 			cout << " " << endl;
 			break;
 
@@ -292,10 +278,8 @@ int main()
 
 		case 7:
 			cout << "  " << endl;
-			//PrintPipe(LoadPipe());
 			LoadPipeCompSt(p, cs);
 			PrintPipeCompSt(p,cs);
-			//PrintCompressionStation(LoadCompSt());
 			cout << "  " << endl;
 			break;
 
