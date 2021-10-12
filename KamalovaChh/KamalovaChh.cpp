@@ -19,28 +19,16 @@ void Menu()
 		<< "  Выберите действие: ";
 }
 
-int GetCorrectNumber(int min, int max)
+int GetCorrectNumber(int min=0, int max= 10000000)
 {
 	int x;
 	while((cin >> x).fail() || x<min || x>max)
 	{
 		cin.clear();
+		cout << "Please, type number (" << min << "-" << max << "): ";
 		cin.ignore(10000, '\n');
-		cout << "Your choice. Please, type number (" << min << "-" << max << "): ";
 	}
 	return x;
-}
-
-int Proverka()
-{
-	int y;
-	do
-	{
-		cin.clear();
-		cin.ignore(10000, '\n');
-		cin >> y;
-	} while (cin.fail() || ((y < 0) && (y > 10000000)));
-	return y;
 }
 
 struct Pipe
@@ -60,22 +48,33 @@ struct CompressionStation
 	int effiency;
 };
 
-void LoadPipeCompSt( Pipe& p, CompressionStation& cs)//!!!!!!!!!!!!!!!!!!!!!!!!!!!! //Исправлено
+void LoadPipeCompSt( Pipe& p, CompressionStation& cs)//!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
 {
 	ifstream filein;
 	filein.open("data.txt", ios::in);
-	if (p.id != 0)
+	string text;
+	filein >> text;
+	if (text =="Pipe")
 	{
 		filein >> p.id;
 		filein >> p.diametr;
 		filein >> p.length;
 		filein >> p.InRepair;
+		filein >> text;
+		if (text == "CompressionStation")
+		{
+			filein >> cs.id;
+			filein.ignore(10000, '\n');
+			getline(filein, cs.name);
+			filein >> cs.NumberOfWorkshops;
+			filein >> cs.NumberOfWorkshopsInOperation;
+			filein >> cs.effiency;
+		}
 	}
-	if (cs.id != 0)
+	if (text == "CompressionStation")
 	{
 		filein >> cs.id;
 		filein.ignore(10000, '\n');
-		string(cs.name);
 		getline(filein, cs.name);
 		filein >> cs.NumberOfWorkshops;
 		filein >> cs.NumberOfWorkshopsInOperation;
@@ -84,7 +83,7 @@ void LoadPipeCompSt( Pipe& p, CompressionStation& cs)//!!!!!!!!!!!!!!!!!!!!!!!!!
 	filein.close();
 }
 
-void PrintPipeCompSt(Pipe& p, CompressionStation& cs)//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //Исправлено
+void PrintPipeCompSt(const Pipe& p, const CompressionStation& cs)//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
 {
 	if (p.id != 0)
 	{
@@ -103,15 +102,10 @@ void PrintPipeCompSt(Pipe& p, CompressionStation& cs)//!!!!!!!!!!!!!!!!!!!!!!!!!
 	if (cs.id != 0)
 	{
 		cout << "Compression Station's identifier: " << cs.id << endl;
-		cin.ignore(10000, '\n');
 		cout << "Compression Station's name: " << cs.name << endl;
 		cout << "Compression Station's number of workshops: " << cs.NumberOfWorkshops << endl;
 		cout << "Compression Station's number of workshops in operation: " << cs.NumberOfWorkshopsInOperation << endl;
 		cout << "Compression Station's effiency: " << cs.effiency << endl;
-	}
-	else
-	{
-		cout << "There is no data";
 	}
 }
 
@@ -120,13 +114,13 @@ void EditPipe(Pipe &p)
 	p.InRepair = !p.InRepair;
 }
 
-void SavePipeCompSt(const Pipe& p, CompressionStation& cs)//!!!!!!!!!!!!!!!!!!!!! .........//Исправлено
+void SavePipeCompSt(const Pipe& p, const CompressionStation& cs)//!!!!!!!!!!!!!!!!!!!!! .........//Исправлено
 {
 	ofstream fileoutt;
 	fileoutt.open("data.txt", ios::out);
 	if (p.id != 0)
 	{
-		fileoutt << "Pipe: " << endl;
+		fileoutt << "Pipe" << endl;
 		fileoutt << p.id << endl;
 		fileoutt << p.diametr << endl;
 		fileoutt << p.length << endl;
@@ -134,11 +128,12 @@ void SavePipeCompSt(const Pipe& p, CompressionStation& cs)//!!!!!!!!!!!!!!!!!!!!
 	}
 	if (cs.id != 0)
 	{
-		fileoutt << "Compression Station: " << endl;
+		fileoutt << "CompressionStation" << endl;
 		fileoutt << cs.id << endl;
 		fileoutt << cs.name << endl;
 		fileoutt << cs.NumberOfWorkshops << endl;
 		fileoutt << cs.NumberOfWorkshopsInOperation << endl;
+		fileoutt << cs.effiency << endl;
 	}
 	fileoutt.close();
 }
@@ -146,52 +141,46 @@ void SavePipeCompSt(const Pipe& p, CompressionStation& cs)//!!!!!!!!!!!!!!!!!!!!
 void EditCompressionStation(CompressionStation& cs)
 {
 	cout << "Добавить цех или остановить один работающий? (1 - Добавить/ 2 - Остановить):  ";
-	if (GetCorrectNumber(1,2) == 1 && (cs.NumberOfWorkshopsInOperation < cs.NumberOfWorkshops))//........// Исправлено
+	if (GetCorrectNumber(1, 2) == 1 && (cs.NumberOfWorkshopsInOperation < cs.NumberOfWorkshops))//........// Исправлено
 	{
-		cout << cs.NumberOfWorkshopsInOperation++ << endl;
+		cout << cs.NumberOfWorkshopsInOperation++;
 		return;
 	}
-	if (GetCorrectNumber(1,2) == 2 && (cs.NumberOfWorkshopsInOperation > 0))
+	if (GetCorrectNumber(1, 2) == 2 && (cs.NumberOfWorkshopsInOperation > 0))
 	{
 		cs.NumberOfWorkshopsInOperation--;
 		return;
 	}
-	if ((cs.NumberOfWorkshopsInOperation = cs.NumberOfWorkshops) || (cs.NumberOfWorkshopsInOperation = 0 || cs.NumberOfWorkshopsInOperation < 0 || cs.NumberOfWorkshopsInOperation > cs.NumberOfWorkshops))
-	{
-		cout << "Редактирование невозможно";
-	}
 
+	cout << "Редактирование невозможно";
 }
 
 istream& operator >> (istream& in, Pipe& p)
 {
 	cout << "Please, enter identifier: ";
-	Proverka();
+	p.id = GetCorrectNumber();
 	cout << "Please, enter diametr: ";
-	Proverka();
+	p.diametr = GetCorrectNumber();
 	cout << "Please, enter length: ";
-	Proverka();
+	p.length = GetCorrectNumber();
 	cout << "Is pipe in repair? (1 - Yes and 0 - No) ";
-	Proverka();
+	p.InRepair = GetCorrectNumber(0,1);
 	return in;
 }
 
 istream& operator >> (istream& in, CompressionStation& cs)//~~~~~~~~~~~~~~~~~~~~~ //Исправлено
 {
 	cout << "Please, enter identifier: ";
-	Proverka();
-	cin.ignore(10000, '\n');
+	cs.id = GetCorrectNumber();
 	cout << "Please, enter name: ";
-	string();
-	getline(cin, cs.name);
+	cin.ignore(10000, '\n');
+    getline(cin, cs.name);
 	cout << "Please, enter number of workshops: ";
-	Proverka();
+	cs.NumberOfWorkshops = GetCorrectNumber();
 	cout << "Please, enter number of active workshops: ";
-	Proverka();
+	cs.NumberOfWorkshopsInOperation = GetCorrectNumber();
 	cout << "Please, point out effiency: ";
-	Proverka();
-	cout << "Please, point out effiency: ";
-	Proverka();
+	cs.effiency = GetCorrectNumber();
 	return in;
 }
 
