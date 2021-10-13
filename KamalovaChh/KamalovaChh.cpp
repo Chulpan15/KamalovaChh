@@ -25,8 +25,8 @@ int GetCorrectNumber(int min=0, int max= 10000000)
 	while((cin >> x).fail() || x<min || x>max)
 	{
 		cin.clear();
-		cout << "Please, type number (" << min << "-" << max << "): ";
 		cin.ignore(10000, '\n');
+		cout << "Please, type number (" << min << "-" << max << "): ";
 	}
 	return x;
 }
@@ -141,17 +141,18 @@ void SavePipeCompSt(const Pipe& p, const CompressionStation& cs)//!!!!!!!!!!!!!!
 void EditCompressionStation(CompressionStation& cs)
 {
 	cout << "Добавить цех или остановить один работающий? (1 - Добавить/ 2 - Остановить):  ";
-	if (GetCorrectNumber(1, 2) == 1 && (cs.NumberOfWorkshopsInOperation < cs.NumberOfWorkshops))//........// Исправлено
+	int parametr;
+	parametr = GetCorrectNumber(1, 2);
+	if (parametr == 1 && (cs.NumberOfWorkshopsInOperation < cs.NumberOfWorkshops))//........//Исправлено
 	{
 		cout << cs.NumberOfWorkshopsInOperation++;
 		return;
 	}
-	if (GetCorrectNumber(1, 2) == 2 && (cs.NumberOfWorkshopsInOperation > 0))
+	if (parametr == 2 && (cs.NumberOfWorkshopsInOperation > 0))
 	{
 		cs.NumberOfWorkshopsInOperation--;
 		return;
 	}
-
 	cout << "Редактирование невозможно";
 }
 
