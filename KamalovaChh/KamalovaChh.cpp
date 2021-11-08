@@ -3,6 +3,7 @@
 #include <string>
 #include <Windows.h>
 #include <cstdlib>
+#include <vector>
 
 using namespace std;
 
@@ -48,10 +49,8 @@ struct CompressionStation
 	int effiency;
 };
 
-void LoadPipeCompSt( Pipe& p, CompressionStation& cs)//!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+void LoadPipeCompSt(ifstream& filein, Pipe& p, CompressionStation& cs)
 {
-	ifstream filein;
-	filein.open("data.txt", ios::in);
 	string text;
 	filein >> text;
 	if (text =="Pipe")
@@ -80,10 +79,41 @@ void LoadPipeCompSt( Pipe& p, CompressionStation& cs)//!!!!!!!!!!!!!!!!!!!!!!!!!
 		filein >> cs.NumberOfWorkshopsInOperation;
 		filein >> cs.effiency;
 	}
-	filein.close();
 }
 
-void PrintPipeCompSt(const Pipe& p, const CompressionStation& cs)//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+//Pipe LoadPipe(ifstream& filein)
+//{
+//	Pipe p;
+//	string text;
+//	filein >> text;
+//	if (text == "Pipe")
+//	{
+//		filein >> p.id;
+//		filein >> p.diametr;
+//		filein >> p.length;
+//		filein >> p.InRepair;
+//		filein >> text;
+//	}
+//	return p;
+//}
+//
+//CompressionStation LoadCompSt(ifstream& fileinn)
+//{
+//	CompressionStation cs;
+//	string text;
+//	fileinn >> text;
+//	if (text == "CompressionStation")
+//	{
+//	  fileinn >> cs.id;
+//	  fileinn.ignore(10000, '\n');
+//	  getline(fileinn, cs.name);
+//	  fileinn >> cs.NumberOfWorkshops;
+//	  fileinn >> cs.NumberOfWorkshopsInOperation;
+//	  fileinn >> cs.effiency;
+//	}
+//	return cs;
+//}
+void PrintPipeCompSt(const Pipe& p, const CompressionStation& cs)
 {
 	if (p.id != 0)
 	{
@@ -114,10 +144,8 @@ void EditPipe(Pipe &p)
 	p.InRepair = !p.InRepair;
 }
 
-void SavePipeCompSt(const Pipe& p, const CompressionStation& cs)//!!!!!!!!!!!!!!!!!!!!! .........//Исправлено
+void SavePipeCompSt(ofstream& fileoutt, const Pipe& p, const CompressionStation& cs)
 {
-	ofstream fileoutt;
-	fileoutt.open("data.txt", ios::out);
 	if (p.id != 0)
 	{
 		fileoutt << "Pipe" << endl;
@@ -135,7 +163,6 @@ void SavePipeCompSt(const Pipe& p, const CompressionStation& cs)//!!!!!!!!!!!!!!
 		fileoutt << cs.NumberOfWorkshopsInOperation << endl;
 		fileoutt << cs.effiency << endl;
 	}
-	fileoutt.close();
 }
 
 void EditCompressionStation(CompressionStation& cs)
@@ -143,7 +170,7 @@ void EditCompressionStation(CompressionStation& cs)
 	cout << "Добавить цех или остановить один работающий? (1 - Добавить/ 2 - Остановить):  ";
 	int parametr;
 	parametr = GetCorrectNumber(1, 2);
-	if (parametr == 1 && (cs.NumberOfWorkshopsInOperation < cs.NumberOfWorkshops))//........//Исправлено
+	if (parametr == 1 && (cs.NumberOfWorkshopsInOperation < cs.NumberOfWorkshops))
 	{
 		cout << cs.NumberOfWorkshopsInOperation++;
 		return;
@@ -169,23 +196,23 @@ istream& operator >> (istream& in, Pipe& p)
 	return in;
 }
 
-istream& operator >> (istream& in, CompressionStation& cs)//~~~~~~~~~~~~~~~~~~~~~ //Исправлено
+istream& operator >> (istream& in, CompressionStation& cs)
 {
 	cout << "Please, enter identifier: ";
 	cs.id = GetCorrectNumber();
 	cout << "Please, enter name: ";
 	cin.ignore(10000, '\n');
-    getline(cin, cs.name);
+	getline(cin, cs.name);
 	cout << "Please, enter number of workshops: ";
 	cs.NumberOfWorkshops = GetCorrectNumber();
 	cout << "Please, enter number of active workshops: ";
-	cs.NumberOfWorkshopsInOperation = GetCorrectNumber();
+	cs.NumberOfWorkshopsInOperation = GetCorrectNumber(0,cs.NumberOfWorkshops);
 	cout << "Please, point out effiency: ";
 	cs.effiency = GetCorrectNumber();
 	return in;
 }
 
-ostream& operator << (ostream& out, const Pipe& p)//!!!!!!!!!!!!!!!!!! //Исправлено
+ostream& operator << (ostream& out, const Pipe& p)
 {
 	if (p.id != 0)
 	{
@@ -204,7 +231,7 @@ ostream& operator << (ostream& out, const Pipe& p)//!!!!!!!!!!!!!!!!!! //Исправл
 	return out;
 }
 
-ostream& operator << (ostream& out, const CompressionStation& cs)//????????????/ //Исправлено
+ostream& operator << (ostream& out, const CompressionStation& cs)
 {
 	if (cs.id != 0)
 	{
@@ -217,64 +244,131 @@ ostream& operator << (ostream& out, const CompressionStation& cs)//????????????/
 	return out;
 }
 
+Pipe& SelectPipe(vector<Pipe>& g)
+{
+		cout << "Enter index: ";
+		unsigned int index = GetCorrectNumber(1u, g.size());
+		return g[index - 1];
+}
+
+CompressionStation& SelectCompressionStation(vector<CompressionStation>& gr)
+{
+		cout << "Enter index: ";
+		unsigned int index = GetCorrectNumber(1u, gr.size());
+		return gr[index - 1];
+}
 int main()
 {
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 	Pipe p = {};
 	CompressionStation cs = {};
-	while(1)
+	vector <Pipe> group;
+	vector <CompressionStation> groupp;
+	while (1)
 	{
 		Menu();
 
-		switch (GetCorrectNumber(0,7))
+		switch (GetCorrectNumber(0, 7))
 		{
 		case 0:
+		{
 			return 0;
+		}
 
 		case 1:
+		{
+			Pipe p;
 			cin >> p;
+			group.push_back(p);
 			cout << "  " << endl;
 			break;
+		}
 
 		case 2:
+		 {
 			cout << "  " << endl;
+			CompressionStation cs;
 			cin >> cs;
+			groupp.push_back(cs);
 			cout << "  " << endl;
 			break;
+		  }
 
 		case 3:
+		{
 			cout << "  " << endl;
-			cout << p;
+			cout << SelectPipe(group) << endl;;
 			cout << "  " << endl;
-			cout << cs;
+			cout << SelectCompressionStation(groupp) << endl;;
 			cout << "  " << endl;
 			break;
+		}
 
 		case 4:
-			EditPipe(p);	
+		{
+			EditPipe(SelectPipe(group));
 			cout << " " << endl;
 			break;
+		}
 
 		case 5:
-			EditCompressionStation(cs);//????????? 
+		{
+			EditCompressionStation(SelectCompressionStation(groupp));
 			cout << " " << endl;
 			break;
+		}
 
 		case 6:
-			cout << " " << endl;
-			SavePipeCompSt(p,cs);
+		 {  cout << "  " << endl;
+			ofstream fileoutt;
+			fileoutt.open("data.txt", ios::out);
+			if (fileoutt.is_open())
+			{ 
+				for (Pipe p : group)
+					SavePipeCompSt(fileoutt, p, cs);
+				for (CompressionStation cs : groupp)
+					SavePipeCompSt(fileoutt, p, cs);
+					fileoutt.close();
+			}
 			break;
+	     }
 
-		case 7:
+	    case 7:
+	     {
 			cout << "  " << endl;
-			LoadPipeCompSt(p, cs);
-			PrintPipeCompSt(p,cs);
-			cout << "  " << endl;
+			ifstream filein;
+			ifstream fileinn;
+			filein.open("data.txt", ios::in);
+			//fileinn.open("data.txt", ios::in);
+			//if (filein.is_open())
+			//{
+			//	group.push_back(LoadPipe(filein));
+			//	filein.close();
+			//	cout << "  " << endl;
+			//}
+			//if (fileinn.is_open())
+			//{
+			//  groupp.push_back(LoadCompSt(fileinn));
+			//  fileinn.close();
+			//	cout << "  "<< endl;
+			//}
+			//PrintPipeCompSt(LoadPipe(filein), LoadCompSt(fileinn));
+			{
+				LoadPipeCompSt(filein, p, cs);
+				group.push_back(p);
+				groupp.push_back(cs);
+				PrintPipeCompSt(p, cs);
+				filein.close();
+				cout << "  " << endl;
+			}
 			break;
+	     }
 
 		default:
+		{
 			cout << "Неправильно выбран пункт меню, попробуйте снова" << endl;
 		}
+      }
 	}
 };
