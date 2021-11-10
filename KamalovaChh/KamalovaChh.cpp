@@ -4,6 +4,8 @@
 #include <Windows.h>
 #include <cstdlib>
 #include <vector>
+//#include "Pipe.h" 
+//#include "utils.h"
 
 using namespace std;
 
@@ -31,10 +33,10 @@ int GetCorrectNumber(int min=0, int max= 10000000)
 	}
 	return x;
 }
-
 struct Pipe
 {
 	int id;
+	std::string name;
 	int diametr;
 	int length;
 	bool InRepair = true;
@@ -49,75 +51,43 @@ struct CompressionStation
 	int effiency;
 };
 
-void LoadPipeCompSt(ifstream& filein, Pipe& p, CompressionStation& cs)
+
+Pipe LoadPipe(ifstream& filein)
 {
+	Pipe p;
 	string text;
 	filein >> text;
-	if (text =="Pipe")
+	if (text == "Pipe")
 	{
-		filein >> p.id;
+		filein.ignore(10000, '\n');
+		getline(filein, p.name);
 		filein >> p.diametr;
 		filein >> p.length;
 		filein >> p.InRepair;
-		filein >> text;
-		if (text == "CompressionStation")
-		{
-			filein >> cs.id;
-			filein.ignore(10000, '\n');
-			getline(filein, cs.name);
-			filein >> cs.NumberOfWorkshops;
-			filein >> cs.NumberOfWorkshopsInOperation;
-			filein >> cs.effiency;
-		}
 	}
-	if (text == "CompressionStation")
-	{
-		filein >> cs.id;
-		filein.ignore(10000, '\n');
-		getline(filein, cs.name);
-		filein >> cs.NumberOfWorkshops;
-		filein >> cs.NumberOfWorkshopsInOperation;
-		filein >> cs.effiency;
-	}
+	return p;
 }
 
-//Pipe LoadPipe(ifstream& filein)
-//{
-//	Pipe p;
-//	string text;
-//	filein >> text;
-//	if (text == "Pipe")
-//	{
-//		filein >> p.id;
-//		filein >> p.diametr;
-//		filein >> p.length;
-//		filein >> p.InRepair;
-//		filein >> text;
-//	}
-//	return p;
-//}
-//
-//CompressionStation LoadCompSt(ifstream& fileinn)
-//{
-//	CompressionStation cs;
-//	string text;
-//	fileinn >> text;
-//	if (text == "CompressionStation")
-//	{
-//	  fileinn >> cs.id;
-//	  fileinn.ignore(10000, '\n');
-//	  getline(fileinn, cs.name);
-//	  fileinn >> cs.NumberOfWorkshops;
-//	  fileinn >> cs.NumberOfWorkshopsInOperation;
-//	  fileinn >> cs.effiency;
-//	}
-//	return cs;
-//}
+CompressionStation LoadCompSt(ifstream& filein)
+{
+	CompressionStation cs;
+	string text;
+	filein >> text;
+	if (text == "CompressionStation")
+	{
+	  filein.ignore(10000, '\n');
+	  getline(filein, cs.name);
+	  filein >> cs.NumberOfWorkshops;
+	  filein >> cs.NumberOfWorkshopsInOperation;
+	  filein >> cs.effiency;
+	}
+	return cs;
+}
 void PrintPipeCompSt(const Pipe& p, const CompressionStation& cs)
 {
-	if (p.id != 0)
+	if (p.diametr!= 0)
 	{
-		cout << "Pipe identifier: " << p.id << endl;
+		cout << "Pipe's name: " << p.name << endl;
 		cout << "Pipe's diametr: " << p.diametr << endl;
 		cout << "Pipe's length: " << p.length << endl;
 		if (p.InRepair == 1)
@@ -129,9 +99,8 @@ void PrintPipeCompSt(const Pipe& p, const CompressionStation& cs)
 			cout << "Pipe works" << endl;
 		}
 	}
-	if (cs.id != 0)
+	if (cs.NumberOfWorkshops != 0)
 	{
-		cout << "Compression Station's identifier: " << cs.id << endl;
 		cout << "Compression Station's name: " << cs.name << endl;
 		cout << "Compression Station's number of workshops: " << cs.NumberOfWorkshops << endl;
 		cout << "Compression Station's number of workshops in operation: " << cs.NumberOfWorkshopsInOperation << endl;
@@ -146,18 +115,17 @@ void EditPipe(Pipe &p)
 
 void SavePipeCompSt(ofstream& fileoutt, const Pipe& p, const CompressionStation& cs)
 {
-	if (p.id != 0)
+	if (p.diametr != 0)
 	{
 		fileoutt << "Pipe" << endl;
-		fileoutt << p.id << endl;
+		fileoutt << p.name << endl;
 		fileoutt << p.diametr << endl;
 		fileoutt << p.length << endl;
 		fileoutt << p.InRepair << endl;
 	}
-	if (cs.id != 0)
+	if (cs.NumberOfWorkshops != 0)
 	{
 		fileoutt << "CompressionStation" << endl;
-		fileoutt << cs.id << endl;
 		fileoutt << cs.name << endl;
 		fileoutt << cs.NumberOfWorkshops << endl;
 		fileoutt << cs.NumberOfWorkshopsInOperation << endl;
@@ -185,8 +153,9 @@ void EditCompressionStation(CompressionStation& cs)
 
 istream& operator >> (istream& in, Pipe& p)
 {
-	cout << "Please, enter identifier: ";
-	p.id = GetCorrectNumber();
+	cout << "Please, enter name: ";
+	cin.ignore(10000, '\n');
+	getline(cin, p.name);
 	cout << "Please, enter diametr: ";
 	p.diametr = GetCorrectNumber();
 	cout << "Please, enter length: ";
@@ -198,8 +167,6 @@ istream& operator >> (istream& in, Pipe& p)
 
 istream& operator >> (istream& in, CompressionStation& cs)
 {
-	cout << "Please, enter identifier: ";
-	cs.id = GetCorrectNumber();
 	cout << "Please, enter name: ";
 	cin.ignore(10000, '\n');
 	getline(cin, cs.name);
@@ -214,9 +181,9 @@ istream& operator >> (istream& in, CompressionStation& cs)
 
 ostream& operator << (ostream& out, const Pipe& p)
 {
-	if (p.id != 0)
+	if (p.diametr != 0)
 	{
-		out << "Pipe identifier: " << p.id << endl;
+		out << "Pipe's name: " << p.name << endl;
 		out << "Pipe's diametr: " << p.diametr << endl;
 		out << "Pipe's length: " << p.length << endl;
 		if (p.InRepair == 1)
@@ -233,9 +200,8 @@ ostream& operator << (ostream& out, const Pipe& p)
 
 ostream& operator << (ostream& out, const CompressionStation& cs)
 {
-	if (cs.id != 0)
+	if (cs.NumberOfWorkshops != 0)
 	{
-		out << "Compression Station's identifier: " << cs.id << endl;
 		out << "Compression Station's name: " << cs.name << endl;
 		out << "Compression Station's number of workshops: " << cs.NumberOfWorkshops << endl;
 		out << "Compression Station's number of workshops in operation: " << cs.NumberOfWorkshopsInOperation << endl;
@@ -297,10 +263,11 @@ int main()
 
 		case 3:
 		{
-			cout << "  " << endl;
-			cout << SelectPipe(group) << endl;;
-			cout << "  " << endl;
-			cout << SelectCompressionStation(groupp) << endl;;
+ 			cout << "  " << endl;
+			for (auto& p: group)
+			cout << p << endl;
+			for (auto& cs: groupp)
+			cout << cs << endl;;
 			cout << "  " << endl;
 			break;
 		}
@@ -325,8 +292,10 @@ int main()
 			fileoutt.open("data.txt", ios::out);
 			if (fileoutt.is_open())
 			{ 
+				fileoutt << group.size() << endl;
 				for (Pipe p : group)
 					SavePipeCompSt(fileoutt, p, cs);
+				fileoutt << groupp.size() << endl;
 				for (CompressionStation cs : groupp)
 					SavePipeCompSt(fileoutt, p, cs);
 					fileoutt.close();
@@ -338,30 +307,21 @@ int main()
 	     {
 			cout << "  " << endl;
 			ifstream filein;
-			ifstream fileinn;
 			filein.open("data.txt", ios::in);
-			//fileinn.open("data.txt", ios::in);
-			//if (filein.is_open())
-			//{
-			//	group.push_back(LoadPipe(filein));
-			//	filein.close();
-			//	cout << "  " << endl;
-			//}
-			//if (fileinn.is_open())
-			//{
-			//  groupp.push_back(LoadCompSt(fileinn));
-			//  fileinn.close();
-			//	cout << "  "<< endl;
-			//}
-			//PrintPipeCompSt(LoadPipe(filein), LoadCompSt(fileinn));
+			if (filein.is_open())
 			{
-				LoadPipeCompSt(filein, p, cs);
-				group.push_back(p);
-				groupp.push_back(cs);
-				PrintPipeCompSt(p, cs);
-				filein.close();
-				cout << "  " << endl;
+					int count;
+					filein >> count;
+					group.reserve(count);
+					while (count--)
+						group.push_back(LoadPipe(filein));
+					int countt;
+					filein >> countt;
+					while (countt--)
+						groupp.push_back(LoadCompSt(filein));
 			}
+			filein.close();
+			cout << "  " << endl;
 			break;
 	     }
 
